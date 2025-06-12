@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Fixed Text Voice Reader</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 2rem;
+      background-color: #222;
+      color: #fff;
+    }
+    #fixedText {
+      background: #333;
+      padding: 1rem;
+      border-radius: 8px;
+      font-size: 1.2rem;
+    }
+    button {
+      margin-top: 1rem;
+      padding: 1rem;
+      font-size: 1rem;
+      background-color: #00bfa5;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Text to Speech</h1>
+  <div id="fixedText">
+     <br/>
+ ColourCo WeatherPro is a tough, durable exterior coating with Maxiflex that provides lasting elasticity against hairline cracks
+<br/>
+
+Application Description.
+<br/>
+Brush or roller
+<br/>
+Health & Safety.
+<br/>
+Keep out of reach of children.
+Ensure good ventilation during application and drying.
+Non-flammable
+<br/>
+Tips & Advice.
+<br/>
+1. Preparing the Surfaces
+Suitable for cement plaster, gypsum plaster, concrete, fibre cement
+ceiling boards, PVC and metal surfaces provided that appropriate
+preparation is carried out.
+2. Cleaning
+Clean immediately with water
+<br/>
+Key information
+<br/>
+Textured, Matt finish
+<br/>
+coverage is Approximately 4 to 6 m² per litre per coat
+<br/>
+2 coats recommended
+<br/>
+Drying Time is 1 hour
+<br/>
+Product Features.
+<br/>
+Flexible paint film.
+Hides imperfections.
+Long lasting protection.
+WeatherPro.
+Guarantee 15 years.
+  </div>
+  <button onclick="readText()">🔊 Read Aloud</button>
+
+  <script>
+    let voices = [];
+
+    function loadVoices() {
+      voices = speechSynthesis.getVoices();
+      if (voices.length === 0) {
+        setTimeout(loadVoices, 100);
+      }
+    }
+    loadVoices();
+    speechSynthesis.onvoiceschanged = loadVoices;
+
+    function readText() {
+      const text = document.getElementById('fixedText').innerText;
+      const utterance = new SpeechSynthesisUtterance(text);
+
+      const femaleVoice = voices.find(voice =>
+        voice.name.includes("Google US English") || 
+        (voice.lang === "en-US" && voice.name.toLowerCase().includes("female"))
+      );
+
+      if (femaleVoice) {
+        utterance.voice = femaleVoice;
+      }
+
+      utterance.lang = 'en-US';
+      speechSynthesis.speak(utterance);
+    }
+  </script>
+</body>
+</html>
