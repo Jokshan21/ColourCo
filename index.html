@@ -28,15 +28,15 @@
       border-radius: 8px;
       cursor: pointer;
     }
-    button.pause { background-color: #fbc02d; }     /* Yellow */
-    button.resume { background-color: #1976d2; }    /* Blue */
-    button.stop { background-color: #d32f2f; }      /* Red */
+    button.pause { background-color: #fbc02d; }
+    button.resume { background-color: #1976d2; }
+    button.stop { background-color: #d32f2f; }
   </style>
 </head>
 <body>
   <h1>Voice Reader</h1>
 
-  <div id="fixedText">
+  <div id="Product Description">
     <strong id="headingText">Text to Voice.</strong>
     <p id="bodyText"><br/>
  ColourCo WeatherPro is a tough, durable exterior coating with Maxiflex that provides lasting elasticity against hairline cracks
@@ -78,7 +78,7 @@ Hides imperfections.
 Long lasting protection.
 WeatherPro.
 Guarantee 15 years.
-.</p>
+</p>
   </div>
 
   <button onclick="readText()">🔊 Read Aloud</button>
@@ -88,7 +88,8 @@ Guarantee 15 years.
 
   <script>
     let voices = [];
-    let currentUtterance = null;
+    let queue = []; // Queue of utterances
+    let isPaused = false;
 
     function loadVoices() {
       voices = speechSynthesis.getVoices();
@@ -101,7 +102,7 @@ Guarantee 15 years.
     speechSynthesis.onvoiceschanged = loadVoices;
 
     function readText() {
-      stopReading(); // Stop anything currently playing
+      stopReading(); // Cancel any ongoing speech
 
       const heading = document.getElementById('headingText').innerText + '.';
       const body = document.getElementById('bodyText').innerText;
@@ -109,11 +110,9 @@ Guarantee 15 years.
       const headingUtterance = new SpeechSynthesisUtterance(heading);
       const bodyUtterance = new SpeechSynthesisUtterance(body);
 
-      // Set slower speed
       headingUtterance.rate = 0.9;
       bodyUtterance.rate = 0.9;
 
-      // Select a female English voice if available
       const femaleVoice = voices.find(voice =>
         voice.name.includes("Google US English") ||
         (voice.lang === "en-US" && voice.name.toLowerCase().includes("female"))
@@ -124,31 +123,43 @@ Guarantee 15 years.
         bodyUtterance.voice = femaleVoice;
       }
 
-      // Speak heading first
-      speechSynthesis.speak(headingUtterance);
+      queue = [headingUtterance, bodyUtterance];
 
-      // Then speak body after short pause
-      headingUtterance.onend = function () {
+      speakNext(); // Start reading
+    }
+
+    function speakNext() {
+      if (queue.length === 0) return;
+
+      const next = queue.shift();
+      speechSynthesis.speak(next);
+
+      next.onend = () => {
+        // Delay next part to simulate pause between heading/body
         setTimeout(() => {
-          speechSynthesis.speak(bodyUtterance);
-        }, 500); // 0.5 second pause
+          speakNext();
+        }, 500);
       };
     }
 
     function pauseReading() {
       if (speechSynthesis.speaking && !speechSynthesis.paused) {
         speechSynthesis.pause();
+        isPaused = true;
       }
     }
 
     function resumeReading() {
       if (speechSynthesis.paused) {
         speechSynthesis.resume();
+        isPaused = false;
       }
     }
 
     function stopReading() {
       speechSynthesis.cancel();
+      queue = [];
+      isPaused = false;
     }
   </script>
 </body>
