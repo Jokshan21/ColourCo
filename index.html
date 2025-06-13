@@ -37,8 +37,10 @@
   <h1>Voice Reader</h1>
 
   <div id="fixedText">
-    <strong id="headingText">Welcome to the ColourCo Text to Speech site.</strong>
-    <p id="bodyText"><br/>
+    <strong id="headingText">Welcome to ColourCo Text to Speech Site.</strong>
+    <p id="bodyText">This website is designed to help visually impaired users hear written content easily, with clear speech and accessible controls.</p>
+  </div>
+  <p> <br/>
  ColourCo WeatherPro is a tough, durable exterior coating with Maxiflex that provides lasting elasticity against hairline cracks
 <br/>
 Application Description.
@@ -77,8 +79,8 @@ Hides imperfections.
 Long lasting protection.
 WeatherPro.
 Guarantee 15 years.
-</p>
-  </div>
+
+  </p>
 
   <button onclick="readText()">🔊 Read Aloud</button>
   <button class="pause" onclick="pauseReading()">⏸️ Pause</button>
@@ -87,8 +89,7 @@ Guarantee 15 years.
 
   <script>
     let voices = [];
-    let queue = []; // Queue of utterances
-    let isPaused = false;
+    let utterance;
 
     function loadVoices() {
       voices = speechSynthesis.getVoices();
@@ -101,16 +102,16 @@ Guarantee 15 years.
     speechSynthesis.onvoiceschanged = loadVoices;
 
     function readText() {
-      stopReading(); // Cancel any ongoing speech
+      stopReading();
 
-      const heading = document.getElementById('headingText').innerText + '.';
+      const heading = document.getElementById('headingText').innerText;
       const body = document.getElementById('bodyText').innerText;
 
-      const headingUtterance = new SpeechSynthesisUtterance(heading);
-      const bodyUtterance = new SpeechSynthesisUtterance(body);
+      const fullText = heading + ".  ... " + body; // use extra pauses with "..."
 
-      headingUtterance.rate = 0.9;
-      bodyUtterance.rate = 0.9;
+      utterance = new SpeechSynthesisUtterance(fullText);
+
+      utterance.rate = 0.9;
 
       const femaleVoice = voices.find(voice =>
         voice.name.includes("Google US English") ||
@@ -118,47 +119,26 @@ Guarantee 15 years.
       );
 
       if (femaleVoice) {
-        headingUtterance.voice = femaleVoice;
-        bodyUtterance.voice = femaleVoice;
+        utterance.voice = femaleVoice;
       }
 
-      queue = [headingUtterance, bodyUtterance];
-
-      speakNext(); // Start reading
-    }
-
-    function speakNext() {
-      if (queue.length === 0) return;
-
-      const next = queue.shift();
-      speechSynthesis.speak(next);
-
-      next.onend = () => {
-        // Delay next part to simulate pause between heading/body
-        setTimeout(() => {
-          speakNext();
-        }, 500);
-      };
+      speechSynthesis.speak(utterance);
     }
 
     function pauseReading() {
       if (speechSynthesis.speaking && !speechSynthesis.paused) {
         speechSynthesis.pause();
-        isPaused = true;
       }
     }
 
     function resumeReading() {
       if (speechSynthesis.paused) {
         speechSynthesis.resume();
-        isPaused = false;
       }
     }
 
     function stopReading() {
       speechSynthesis.cancel();
-      queue = [];
-      isPaused = false;
     }
   </script>
 </body>
