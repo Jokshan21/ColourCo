@@ -31,6 +31,7 @@
     button.pause { background-color: #fbc02d; }
     button.resume { background-color: #1976d2; }
     button.stop { background-color: #d32f2f; }
+    button.language { background-color: #5c6bc0; }
   </style>
 </head>
 <body>
@@ -39,112 +40,30 @@
   <div id="fixedText">
     <strong id="headingText">Welcome to ColourCo Text To Speech.</strong>
     
-<p id="bodyText">This website is designed to help the visually impaired users hear written content easily, with clear speech and accessible controls.
-  <br> <br>
-ColourCo WeatherPro is a tough, durable exterior coating with Maxiflex that provides lasting elasticity against hairline cracks.
-<br> <br>
-Application Description.
-<br> <br>
-Brush or roller
-<br>
-Health & Safety.
-<br>
-Keep out of reach of children.
-  <br>
-Ensure good ventilation during application and drying.
-  <br>
-Non-flammable
-<br> <br>
-Tips & Advice.
-<br> <br>
-1. Preparing the Surfaces
-Suitable for cement plaster, gypsum plaster, concrete, fibre cement
-ceiling boards, PVC and metal surfaces provided that appropriate
-preparation is carried out.
-<br>
-2. Cleaning
-Clean immediately with water
-<br> <br>
-Key information
-<br> <br>
-Textured, Matt finish
-<br>
-coverage is Approximately 4 to 6 m² per litre per coat
-<br>
-2 coats recommended
-<br>
-Drying Time is 1 hour
-<br> <br>
-Product Features.
-<br> <br>
-Flexible paint film.
-  <br>
-Hides imperfections.
-  <br>
-Long lasting protection.
-  <br>
-WeatherPro.
-  <br>
-  Guarantee 15 years.
-</p>
-  </div>
-
-  <button onclick="readText()">🔊 Read Aloud</button>
-  <button class="stop" onclick="stopReading()">🛑 Stop</button>
-
-  <script>
-    let voices = [];
-    let utterance;
-
-    function loadVoices() {
-      voices = speechSynthesis.getVoices();
-      if (voices.length === 0) {
-        setTimeout(loadVoices, 100);
-      }
-    }
-
-    loadVoices();
-    speechSynthesis.onvoiceschanged = loadVoices;
-
-    function readText() {
-      stopReading();
-
-      const heading = document.getElementById('headingText').innerText;
-      const body = document.getElementById('bodyText').innerText;
-
-      const fullText = heading + ".  ... " + body; // use extra pauses with "..."
-
-      utterance = new SpeechSynthesisUtterance(fullText);
-
-      utterance.rate = 0.9;
-
-      const femaleVoice = voices.find(voice =>
-        voice.name.includes("Google US English") ||
-        (voice.lang === "en-US" && voice.name.toLowerCase().includes("female"))
-      );
-
-      if (femaleVoice) {
-        utterance.voice = femaleVoice;
-      }
-
-      speechSynthesis.speak(utterance);
-    }
-
-    function pauseReading() {
-      if (speechSynthesis.speaking && !speechSynthesis.paused) {
-        speechSynthesis.pause();
-      }
-    }
-
-    function resumeReading() {
-      if (speechSynthesis.paused) {
-        speechSynthesis.resume();
-      }
-    }
-
-    function stopReading() {
-      speechSynthesis.cancel();
-    }
-  </script>
-</body>
-</html>
+    <p id="bodyText">
+      This website is designed to help the visually impaired users hear written content easily, with clear speech and accessible controls.
+      <br><br>
+      ColourCo WeatherPro is a tough, durable exterior coating with Maxiflex that provides lasting elasticity against hairline cracks.
+      <br><br>
+      Application Description.
+      <br><br>
+      Brush or roller
+      <br>
+      Health & Safety.
+      <br>
+      Keep out of reach of children.
+      <br>
+      Ensure good ventilation during application and drying.
+      <br>
+      Non-flammable
+      <br><br>
+      Tips & Advice.
+      <br><br>
+      1. Preparing the Surfaces
+      Suitable for cement plaster, gypsum plaster, concrete, fibre cement
+      ceiling boards, PVC and metal surfaces provided that appropriate
+      preparation is carried out.
+      <br>
+      2. Cleaning
+      Clean immediately with water
+      <br><br>
