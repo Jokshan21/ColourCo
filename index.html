@@ -105,7 +105,6 @@
     <button class="stop" onclick="stopReading()">🛑 Stop</button>
   </div>
 
-  <!-- Script -->
   <script>
     let voices = [];
     let utterance;
@@ -128,12 +127,54 @@
       stopReading();
     }
 
+    function translateText(text, lang) {
+      // Example translations (partial)
+      const translations = {
+        af: {
+          "Welcome to ColourCo Text To Speech.": "Welkom by ColourCo Teks-na-Spraak.",
+          "This website is designed to help the visually impaired users hear written content easily, with clear speech and accessible controls.":
+            "Hierdie webwerf is ontwerp om gebruikers met sigprobleme te help om geskrewe inhoud maklik te hoor, met duidelike spraak en toeganklike kontroles.",
+          "Brush or roller": "Kwassie of roller",
+          "Keep out of reach of children.": "Hou buite bereik van kinders.",
+          "Non-flammable": "Nie-vlambaar",
+          "Clean immediately with water": "Maak onmiddellik met water skoon",
+          "Drying Time is 1 hour": "Droogtyd is 1 uur",
+          "Guarantee 15 years.": "Waarborg 15 jaar."
+        },
+        zu: {
+          "Welcome to ColourCo Text To Speech.": "Siyakwamukela ku-ColourCo Umbhalo Okuya Ezwi.",
+          "This website is designed to help the visually impaired users hear written content easily, with clear speech and accessible controls.":
+            "Leli sayithi lenzelwe ukusiza abantu abakhubazekile ngokubona balalele okuqukethwe okubhalwe phansi kalula, ngezwi elicacile nezilawuli ezifinyelelekayo.",
+          "Brush or roller": "Ibhulashi noma i-roller",
+          "Keep out of reach of children.": "Gcina kude nezingane.",
+          "Non-flammable": "Akuthathi cala",
+          "Clean immediately with water": "Hlanza ngokushesha ngamanzi",
+          "Drying Time is 1 hour": "Isikhathi sokoma yihora eli-1",
+          "Guarantee 15 years.": "Iwaranti yeminyaka engu-15."
+        }
+      };
+
+      const langData = translations[lang] || {};
+      let output = text;
+
+      for (const [original, translated] of Object.entries(langData)) {
+        const pattern = new RegExp(original.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+        output = output.replace(pattern, translated);
+      }
+
+      return output;
+    }
+
     function readText() {
       stopReading();
 
       const heading = document.getElementById('headingText').innerText;
       const body = document.getElementById('bodyText').innerText;
-      const fullText = heading + ". ... " + body;
+      let fullText = heading + ". ... " + body;
+
+      if (selectedLang !== 'en') {
+        fullText = translateText(fullText, selectedLang);
+      }
 
       utterance = new SpeechSynthesisUtterance(fullText);
       utterance.rate = 0.9;
@@ -145,7 +186,7 @@
       if (voiceForLang) {
         utterance.voice = voiceForLang;
       } else {
-        console.warn(`No voice found for language: ${selectedLang}. Using default.`);
+        console.warn(`No native voice for "${selectedLang}". Using fallback.`);
       }
 
       speechSynthesis.speak(utterance);
