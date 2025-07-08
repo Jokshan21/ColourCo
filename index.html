@@ -102,6 +102,7 @@
     <button class="stop" onclick="stopReading()">🛑 Stop</button>
   </div>
 
+  <!-- Script -->
   <script>
     let voices = [];
     let utterance;
@@ -122,16 +123,14 @@
     loadVoices();
 
     function startReading() {
-      stopReading(); // reset everything
+      stopReading();
 
       const heading = document.getElementById('headingText').innerText;
       const body = document.getElementById('bodyText').innerText;
-      const fullText = heading + " ... " + body;
+      const fullText = heading + ". " + body; // fixed "dot dot dot" issue
 
-      // Split into sentences
       sentences = fullText.match(/[^\.!\?]+[\.!\?]+/g) || [fullText];
       currentSentenceIndex = 0;
-
       readNextSentence();
     }
 
