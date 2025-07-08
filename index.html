@@ -67,3 +67,100 @@
       2. Cleaning
       Clean immediately with water
       <br><br>
+      Key information
+      <br><br>
+      Textured, Matt finish
+      <br>
+      Coverage is approximately 4 to 6 m² per litre per coat
+      <br>
+      2 coats recommended
+      <br>
+      Drying time is 1 hour
+      <br><br>
+      Product Features.
+      <br><br>
+      Flexible paint film.
+      <br>
+      Hides imperfections.
+      <br>
+      Long lasting protection.
+      <br>
+      WeatherPro.
+      <br>
+      Guarantee 15 years.
+    </p>
+  </div>
+
+  <!-- Language Buttons -->
+  <div>
+    <button class="language" onclick="setLanguage('en')">🇬🇧 English</button>
+    <button class="language" onclick="setLanguage('af')">🇿🇦 Afrikaans</button>
+    <button class="language" onclick="setLanguage('zu')">🇿🇦 isiZulu</button>
+  </div>
+
+  <!-- Control Buttons -->
+  <div>
+    <button id="readButton" onclick="readText()" disabled>🔊 Read Aloud</button>
+    <button class="pause" onclick="pauseReading()">⏸ Pause</button>
+    <button class="resume" onclick="resumeReading()">▶️ Resume</button>
+    <button class="stop" onclick="stopReading()">🛑 Stop</button>
+  </div>
+
+  <script>
+    let voices = [];
+    let utterance;
+    let selectedLang = 'en'; // Default language is English
+
+    function loadVoices() {
+      voices = speechSynthesis.getVoices();
+      if (voices.length > 0) {
+        document.getElementById("readButton").disabled = false;
+      } else {
+        setTimeout(loadVoices, 100);
+      }
+    }
+
+    speechSynthesis.onvoiceschanged = loadVoices;
+    loadVoices();
+
+    function setLanguage(langCode) {
+      selectedLang = langCode;
+      stopReading();
+    }
+
+    function readText() {
+      stopReading();
+
+      const heading = document.getElementById('headingText').innerText;
+      const body = document.getElementById('bodyText').innerText;
+      const fullText = heading + ". ... " + body;
+
+      utterance = new SpeechSynthesisUtterance(fullText);
+      utterance.rate = 0.9;
+
+      const voice = voices.find(v => v.lang.startsWith(selectedLang));
+      if (voice) {
+        utterance.voice = voice;
+      }
+
+      speechSynthesis.speak(utterance);
+    }
+
+    function pauseReading() {
+      if (speechSynthesis.speaking && !speechSynthesis.paused) {
+        speechSynthesis.pause();
+      }
+    }
+
+    function resumeReading() {
+      if (speechSynthesis.paused) {
+        speechSynthesis.resume();
+      }
+    }
+
+    function stopReading() {
+      speechSynthesis.cancel();
+    }
+  </script>
+</body>
+</html>
