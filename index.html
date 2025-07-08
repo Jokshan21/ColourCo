@@ -116,6 +116,7 @@
     <button class="stop" onclick="stopReading()">🛑 Stop</button>
   </div>
 
+  <!-- Script -->
   <script>
     let voices = [];
     let utterance;
@@ -156,17 +157,22 @@
     function pauseReading() {
       if (speechSynthesis.speaking && !speechSynthesis.paused) {
         speechSynthesis.pause();
+        console.log("Speech paused.");
       }
     }
 
     function resumeReading() {
       if (speechSynthesis.paused) {
         speechSynthesis.resume();
+        console.log("Speech resumed.");
+      } else {
+        console.log("Nothing to resume.");
       }
     }
 
     function stopReading() {
       speechSynthesis.cancel();
+      console.log("Speech stopped.");
     }
   </script>
 </body>
