@@ -22,7 +22,6 @@
       margin: 0.5rem 1rem 0.5rem 0;
       padding: 1rem;
       font-size: 1rem;
-      background-color: #00bfa5;
       color: white;
       border: none;
       border-radius: 8px;
@@ -31,7 +30,8 @@
     button.pause { background-color: #fbc02d; }
     button.resume { background-color: #1976d2; }
     button.stop { background-color: #d32f2f; }
-    button.language { background-color: #5c6bc0; }
+    button.language { background-color: #7b1fa2; }
+    button.read { background-color: #00bfa5; }
   </style>
 </head>
 <body>
@@ -39,7 +39,6 @@
 
   <div id="fixedText">
     <strong id="headingText">Welcome to ColourCo Text To Speech.</strong>
-    
     <p id="bodyText">
       This website is designed to help the visually impaired users hear written content easily, with clear speech and accessible controls.
       <br><br>
@@ -75,7 +74,7 @@
       <br>
       2 coats recommended
       <br>
-      Drying time is 1 hour
+      Drying Time is 1 hour
       <br><br>
       Product Features.
       <br><br>
@@ -91,25 +90,26 @@
     </p>
   </div>
 
-  <!-- Language Buttons -->
-  <div>
+  <!-- Language Selection -->
+  <div style="margin-bottom: 1rem;">
     <button class="language" onclick="setLanguage('en')">🇬🇧 English</button>
     <button class="language" onclick="setLanguage('af')">🇿🇦 Afrikaans</button>
     <button class="language" onclick="setLanguage('zu')">🇿🇦 isiZulu</button>
   </div>
 
-  <!-- Control Buttons -->
+  <!-- Controls -->
   <div>
-    <button id="readButton" onclick="readText()" disabled>🔊 Read Aloud</button>
+    <button id="readButton" class="read" onclick="readText()" disabled>🔊 Read Aloud</button>
     <button class="pause" onclick="pauseReading()">⏸ Pause</button>
     <button class="resume" onclick="resumeReading()">▶️ Resume</button>
     <button class="stop" onclick="stopReading()">🛑 Stop</button>
   </div>
 
+  <!-- Script -->
   <script>
     let voices = [];
     let utterance;
-    let selectedLang = 'en'; // Default language is English
+    let selectedLang = 'en';
 
     function loadVoices() {
       voices = speechSynthesis.getVoices();
@@ -138,9 +138,14 @@
       utterance = new SpeechSynthesisUtterance(fullText);
       utterance.rate = 0.9;
 
-      const voice = voices.find(v => v.lang.startsWith(selectedLang));
-      if (voice) {
-        utterance.voice = voice;
+      const voiceForLang = voices.find(voice =>
+        voice.lang.toLowerCase().startsWith(selectedLang)
+      );
+
+      if (voiceForLang) {
+        utterance.voice = voiceForLang;
+      } else {
+        console.warn(`No voice found for language: ${selectedLang}. Using default.`);
       }
 
       speechSynthesis.speak(utterance);
