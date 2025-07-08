@@ -32,4 +32,164 @@
 
     .highlight {
       background-color: yellow;
-      color:
+      color: black;
+      font-weight: bold;
+    }
+
+    button {
+      margin: 0.5rem 1rem 0.5rem 0;
+      padding: 1rem;
+      font-size: 1rem;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      transition: transform 0.2s;
+    }
+
+    button:hover {
+      transform: scale(1.05);
+    }
+
+    button.read { background-color: #00bfa5; }
+    button.pause { background-color: #fbc02d; color: #000; }
+    button.stop { background-color: #d32f2f; }
+  </style>
+</head>
+<body>
+  <h1>🎧 Voice Reader</h1>
+
+  <div id="fixedText">
+    <strong id="headingText">Welcome to ColourCo Text To Speech.</strong>
+    <p id="bodyText">
+      This website is designed to help the visually impaired users hear written content easily, with clear speech and accessible controls.
+      <br><br>
+      ColourCo WeatherPro is a tough, durable exterior coating with Maxiflex that provides lasting elasticity against hairline cracks.
+      <br><br>
+      Application Description.
+      <br><br>
+      Brush or roller.
+      <br>
+      Health & Safety.
+      <br>
+      Keep out of reach of children.
+      <br>
+      Ensure good ventilation during application and drying.
+      <br>
+      Non-flammable.
+      <br><br>
+      Tips & Advice.
+      <br><br>
+      1. Preparing the Surfaces — Suitable for cement plaster, gypsum plaster, concrete, fibre cement ceiling boards, PVC and metal surfaces provided that appropriate preparation is carried out.
+      <br>
+      2. Cleaning — Clean immediately with water.
+      <br><br>
+      Key information:
+      <br>
+      Textured, Matt finish. Coverage is approximately 4 to 6 m² per litre per coat. 2 coats recommended. Drying Time is 1 hour.
+      <br><br>
+      Product Features:
+      <br>
+      Flexible paint film. Hides imperfections. Long lasting protection. WeatherPro. Guarantee 15 years.
+    </p>
+  </div>
+
+  <!-- Controls -->
+  <div>
+    <button id="readButton" class="read" onclick="startReading()" disabled>🔊 Read Aloud</button>
+    <button class="pause" onclick="pauseReading()">⏸ Pause</button>
+    <button class="stop" onclick="stopReading()">🛑 Stop</button>
+  </div>
+
+  <script>
+    let voices = [];
+    let utterance;
+    let sentences = [];
+    let currentSentenceIndex = 0;
+    let isPaused = false;
+
+    function loadVoices() {
+      voices = speechSynthesis.getVoices();
+      if (voices.length > 0) {
+        document.getElementById("readButton").disabled = false;
+      } else {
+        setTimeout(loadVoices, 100);
+      }
+    }
+
+    speechSynthesis.onvoiceschanged = loadVoices;
+    loadVoices();
+
+    function startReading() {
+      stopReading(); // reset everything
+
+      const heading = document.getElementById('headingText').innerText;
+      const body = document.getElementById('bodyText').innerText;
+      const fullText = heading + " ... " + body;
+
+      // Split into sentences
+      sentences = fullText.match(/[^\.!\?]+[\.!\?]+/g) || [fullText];
+      currentSentenceIndex = 0;
+
+      readNextSentence();
+    }
+
+    function readNextSentence() {
+      if (currentSentenceIndex >= sentences.length) {
+        clearHighlight();
+        return;
+      }
+
+      const sentence = sentences[currentSentenceIndex].trim();
+      highlightSentence(sentence);
+
+      utterance = new SpeechSynthesisUtterance(sentence);
+      utterance.rate = 0.9;
+
+      const englishVoice = voices.find(voice =>
+        voice.lang.startsWith("en") && voice.name.toLowerCase().includes("female")
+      ) || voices.find(v => v.lang.startsWith("en"));
+
+      if (englishVoice) {
+        utterance.voice = englishVoice;
+      }
+
+      utterance.onend = () => {
+        if (!isPaused) {
+          currentSentenceIndex++;
+          readNextSentence();
+        }
+      };
+
+      speechSynthesis.speak(utterance);
+    }
+
+    function highlightSentence(sentence) {
+      const bodyText = document.getElementById('bodyText').innerText;
+      const regex = new RegExp(sentence.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
+      const highlighted = bodyText.replace(regex, match => `<span class="highlight">${match}</span>`);
+      document.getElementById('bodyText').innerHTML = highlighted;
+    }
+
+    function clearHighlight() {
+      const originalText = document.getElementById('bodyText').innerText;
+      document.getElementById('bodyText').innerHTML = originalText;
+    }
+
+    function pauseReading() {
+      if (speechSynthesis.speaking && !speechSynthesis.paused) {
+        speechSynthesis.pause();
+        isPaused = true;
+      }
+    }
+
+    function stopReading() {
+      speechSynthesis.cancel();
+      isPaused = false;
+      currentSentenceIndex = 0;
+      clearHighlight();
+    }
+  </script>
+</body>
+</html>
