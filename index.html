@@ -5,19 +5,31 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Voice Reader</title>
   <style>
+    /* Colorful animated gradient background */
     body {
       font-family: Arial, sans-serif;
       padding: 2rem;
-      background-color: #222;
       color: #fff;
+      background: linear-gradient(-45deg, #ff6ec4, #7873f5, #4ade80, #facc15);
+      background-size: 400% 400%;
+      animation: gradientBG 10s ease infinite;
+      min-height: 100vh;
     }
+
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
     #fixedText {
-      background: #333;
+      background: rgba(0, 0, 0, 0.6);
       padding: 1rem;
       border-radius: 8px;
       font-size: 1.2rem;
       margin-bottom: 1rem;
     }
+
     button {
       margin: 0.5rem 1rem 0.5rem 0;
       padding: 1rem;
@@ -26,16 +38,22 @@
       border: none;
       border-radius: 8px;
       cursor: pointer;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      transition: transform 0.2s;
     }
-    button.pause { background-color: #fbc02d; }
+
+    button:hover {
+      transform: scale(1.05);
+    }
+
+    button.read { background-color: #00bfa5; }
+    button.pause { background-color: #fbc02d; color: #000; }
     button.resume { background-color: #1976d2; }
     button.stop { background-color: #d32f2f; }
-    button.language { background-color: #7b1fa2; }
-    button.read { background-color: #00bfa5; }
   </style>
 </head>
 <body>
-  <h1>Voice Reader</h1>
+  <h1>🎧 Voice Reader</h1>
 
   <div id="fixedText">
     <strong id="headingText">Welcome to ColourCo Text To Speech.</strong>
@@ -90,13 +108,6 @@
     </p>
   </div>
 
-  <!-- Language Selection -->
-  <div style="margin-bottom: 1rem;">
-    <button class="language" onclick="setLanguage('en')">🇬🇧 English</button>
-    <button class="language" onclick="setLanguage('af')">🇿🇦 Afrikaans</button>
-    <button class="language" onclick="setLanguage('zu')">🇿🇦 isiZulu</button>
-  </div>
-
   <!-- Controls -->
   <div>
     <button id="readButton" class="read" onclick="readText()" disabled>🔊 Read Aloud</button>
@@ -108,7 +119,6 @@
   <script>
     let voices = [];
     let utterance;
-    let selectedLang = 'en';
 
     function loadVoices() {
       voices = speechSynthesis.getVoices();
@@ -122,71 +132,22 @@
     speechSynthesis.onvoiceschanged = loadVoices;
     loadVoices();
 
-    function setLanguage(langCode) {
-      selectedLang = langCode;
-      stopReading();
-    }
-
-    function translateText(text, lang) {
-      // Example translations (partial)
-      const translations = {
-        af: {
-          "Welcome to ColourCo Text To Speech.": "Welkom by ColourCo Teks-na-Spraak.",
-          "This website is designed to help the visually impaired users hear written content easily, with clear speech and accessible controls.":
-            "Hierdie webwerf is ontwerp om gebruikers met sigprobleme te help om geskrewe inhoud maklik te hoor, met duidelike spraak en toeganklike kontroles.",
-          "Brush or roller": "Kwassie of roller",
-          "Keep out of reach of children.": "Hou buite bereik van kinders.",
-          "Non-flammable": "Nie-vlambaar",
-          "Clean immediately with water": "Maak onmiddellik met water skoon",
-          "Drying Time is 1 hour": "Droogtyd is 1 uur",
-          "Guarantee 15 years.": "Waarborg 15 jaar."
-        },
-        zu: {
-          "Welcome to ColourCo Text To Speech.": "Siyakwamukela ku-ColourCo Umbhalo Okuya Ezwi.",
-          "This website is designed to help the visually impaired users hear written content easily, with clear speech and accessible controls.":
-            "Leli sayithi lenzelwe ukusiza abantu abakhubazekile ngokubona balalele okuqukethwe okubhalwe phansi kalula, ngezwi elicacile nezilawuli ezifinyelelekayo.",
-          "Brush or roller": "Ibhulashi noma i-roller",
-          "Keep out of reach of children.": "Gcina kude nezingane.",
-          "Non-flammable": "Akuthathi cala",
-          "Clean immediately with water": "Hlanza ngokushesha ngamanzi",
-          "Drying Time is 1 hour": "Isikhathi sokoma yihora eli-1",
-          "Guarantee 15 years.": "Iwaranti yeminyaka engu-15."
-        }
-      };
-
-      const langData = translations[lang] || {};
-      let output = text;
-
-      for (const [original, translated] of Object.entries(langData)) {
-        const pattern = new RegExp(original.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
-        output = output.replace(pattern, translated);
-      }
-
-      return output;
-    }
-
     function readText() {
       stopReading();
 
       const heading = document.getElementById('headingText').innerText;
       const body = document.getElementById('bodyText').innerText;
-      let fullText = heading + ". ... " + body;
-
-      if (selectedLang !== 'en') {
-        fullText = translateText(fullText, selectedLang);
-      }
+      const fullText = heading + ". ... " + body;
 
       utterance = new SpeechSynthesisUtterance(fullText);
       utterance.rate = 0.9;
 
-      const voiceForLang = voices.find(voice =>
-        voice.lang.toLowerCase().startsWith(selectedLang)
-      );
+      const englishVoice = voices.find(voice =>
+        voice.lang.startsWith("en") && voice.name.toLowerCase().includes("female")
+      ) || voices.find(v => v.lang.startsWith("en"));
 
-      if (voiceForLang) {
-        utterance.voice = voiceForLang;
-      } else {
-        console.warn(`No native voice for "${selectedLang}". Using fallback.`);
+      if (englishVoice) {
+        utterance.voice = englishVoice;
       }
 
       speechSynthesis.speak(utterance);
