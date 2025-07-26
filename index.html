@@ -1,194 +1,49 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Voice Reader</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 2rem;
-      color: #fff;
-      background: linear-gradient(-45deg, #ff6ec4, #7873f5, #4ade80, #facc15);
-      background-size: 400% 400%;
-      animation: gradientBG 10s ease infinite;
-      min-height: 100vh;
-    }
-
-    @keyframes gradientBG {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-
-    #fixedText {
-      background: rgba(0, 0, 0, 0.6);
-      padding: 1rem;
-      border-radius: 8px;
-      font-size: 1.2rem;
-      margin-bottom: 1rem;
-      line-height: 1.6;
-    }
-
-    .highlight {
-      background-color: yellow;
-      color: black;
-      font-weight: bold;
-    }
-
-    button {
-      margin: 0.5rem 1rem 0.5rem 0;
-      padding: 1rem;
-      font-size: 1rem;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-      transition: transform 0.2s;
-    }
-
-    button:hover {
-      transform: scale(1.05);
-    }
-
-    button.read { background-color: #00bfa5; }
-    button.pause { background-color: #fbc02d; color: #000; }
-    button.stop { background-color: #d32f2f; }
-  </style>
-</head>
-<body>
-  <h1>🎧 Voice Reader</h1>
-
-  <div id="fixedText">
-    <strong id="headingText">Welcome to ColourCo Text To Speech.</strong>
-    <p id="bodyText">
-      This website is designed to help the visually impaired users hear written content easily, with clear speech and accessible controls.
-      <br><br>
-      ColourCo WeatherPro is a tough, durable exterior coating with Maxiflex that provides lasting elasticity against hairline cracks.
-      <br><br>
-      Application Description.
-      <br><br>
-      Brush or roller.
-      <br>
-      Health & Safety.
-      <br>
-      Keep out of reach of children.
-      <br>
-      Ensure good ventilation during application and drying.
-      <br>
-      Non-flammable.
-      <br><br>
-      Tips & Advice.
-      <br><br>
-      1. Preparing the Surfaces — Suitable for cement plaster, gypsum plaster, concrete, fibre cement ceiling boards, PVC and metal surfaces provided that appropriate preparation is carried out.
-      <br>
-      2. Cleaning — Clean immediately with water.
-      <br><br>
-      Key information:
-      <br>
-      Textured, Matt finish. Coverage is approximately 4 to 6 m² per litre per coat. 2 coats recommended. Drying Time is 1 hour.
-      <br><br>
-      Product Features:
-      <br>
-      Flexible paint film. Hides imperfections. Long lasting protection. WeatherPro. Guarantee 15 years.
-    </p>
-  </div>
-
-  <!-- Controls -->
-  <div>
-    <button id="readButton" class="read" onclick="startReading()" disabled>🔊 Read Aloud</button>
-    <button class="pause" onclick="pauseReading()">⏸ Pause</button>
-    <button class="stop" onclick="stopReading()">🛑 Stop</button>
-  </div>
-
-  <!-- Script -->
-  <script>
-    let voices = [];
-    let utterance;
-    let sentences = [];
-    let currentSentenceIndex = 0;
-    let isPaused = false;
-
-    function loadVoices() {
-      voices = speechSynthesis.getVoices();
-      if (voices.length > 0) {
-        document.getElementById("readButton").disabled = false;
-      } else {
-        setTimeout(loadVoices, 100);
-      }
-    }
-
-    speechSynthesis.onvoiceschanged = loadVoices;
-    loadVoices();
-
-    function startReading() {
-      stopReading();
-
-      const heading = document.getElementById('headingText').innerText;
-      const body = document.getElementById('bodyText').innerText;
-      const fullText = heading + ". " + body; // fixed "dot dot dot" issue
-
-      sentences = fullText.match(/[^\.!\?]+[\.!\?]+/g) || [fullText];
-      currentSentenceIndex = 0;
-      readNextSentence();
-    }
-
-    function readNextSentence() {
-      if (currentSentenceIndex >= sentences.length) {
-        clearHighlight();
-        return;
-      }
-
-      const sentence = sentences[currentSentenceIndex].trim();
-      highlightSentence(sentence);
-
-      utterance = new SpeechSynthesisUtterance(sentence);
-      utterance.rate = 0.9;
-
-      const englishVoice = voices.find(voice =>
-        voice.lang.startsWith("en") && voice.name.toLowerCase().includes("female")
-      ) || voices.find(v => v.lang.startsWith("en"));
-
-      if (englishVoice) {
-        utterance.voice = englishVoice;
-      }
-
-      utterance.onend = () => {
-        if (!isPaused) {
-          currentSentenceIndex++;
-          readNextSentence();
-        }
-      };
-
-      speechSynthesis.speak(utterance);
-    }
-
-    function highlightSentence(sentence) {
-      const bodyText = document.getElementById('bodyText').innerText;
-      const regex = new RegExp(sentence.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
-      const highlighted = bodyText.replace(regex, match => `<span class="highlight">${match}</span>`);
-      document.getElementById('bodyText').innerHTML = highlighted;
-    }
-
-    function clearHighlight() {
-      const originalText = document.getElementById('bodyText').innerText;
-      document.getElementById('bodyText').innerHTML = originalText;
-    }
-
-    function pauseReading() {
-      if (speechSynthesis.speaking && !speechSynthesis.paused) {
-        speechSynthesis.pause();
-        isPaused = true;
-      }
-    }
-
-    function stopReading() {
-      speechSynthesis.cancel();
-      isPaused = false;
-      currentSentenceIndex = 0;
-      clearHighlight();
-    }
-  </script>
-</body>
-</html>
+<div id="productDetails" style="margin-top: 2rem; background: rgba(0,0,0,0.6); padding: 1rem; border-radius: 8px; font-size: 1.1rem;">
+  <h2>🛡️ ColourCo WeatherPro Fine Textured</h2>
+  <p>
+    ColourCo WeatherPro is a tough, durable exterior coating with Ultraflex™ that provides lasting elasticity against hairline cracks and ensures ultimate weather resistance.
+    <br><br>
+    <strong>Finish & Colours:</strong><br>
+    • Fine textured matt finish, available in 30 colours<br>
+    • Colour swatch references are as accurate as modern printing will allow.
+    <br><br>
+    <strong>Pack Sizes:</strong><br>
+    • Available in 5L, 10L, and 20L (lift with care for sizes 10L and up)<br>
+    • Comes with a 15-year guarantee (register at www.colourco.co.za within 30 days)
+    <br><br>
+    <strong>Surface Suitability:</strong><br>
+    • Cement plaster, concrete, fibre cement and similar – with correct surface prep
+    <br><br>
+    <strong>Application:</strong><br>
+    • Apply with brush or lamb’s wool roller<br>
+    • Spray only suitable for WeatherPro UltraSmooth<br>
+    • Stir thoroughly with a flat paddle before use<br>
+    • Surface temperature must be between 10–35°C and humidity 10–85% or 2°C above dew point
+    <br><br>
+    <strong>Drying & Coverage:</strong><br>
+    • Touch dry in 60 minutes<br>
+    • Recoat after 4 hours<br>
+    • 7–9 m² per litre per coat; 2 coats recommended
+    <br><br>
+    <strong>Technique Tips:</strong><br>
+    • Do not overspread or underapply<br>
+    • Use overlapping V-strokes (horizontal, diagonal, vertical)<br>
+    • Maintain wet edge during use
+    <br><br>
+    <strong>Cleaning:</strong><br>
+    • Do not thin – affects crack bridging<br>
+    • Clean equipment immediately with water
+    <br><br>
+    <strong>Safety:</strong><br>
+    • APEO free, non-flammable<br>
+    • May cause allergic skin reaction<br>
+    • Harmful to aquatic life – avoid release into drains or watercourses<br>
+    • Use protective gear and ensure ventilation during application
+    <br><br>
+    <strong>Environmental Warning:</strong><br>
+    Even small amounts can harm aquatic life. Dispose of properly via approved local waste facilities.
+    <br><br>
+    <strong>Colour Disclaimer:</strong><br>
+    Colours are approximate. For consistency, use containers from the same batch or mix multiple batches together.
+  </p>
+</div>
