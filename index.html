@@ -58,6 +58,11 @@
       color: black;
       font-weight: bold;
     }
+
+    a {
+      color: #facc15;
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body>
@@ -70,9 +75,7 @@
   </div>
 
   <div id="content">
-    <p id="text">
-      <!-- We'll break sentences into span tags via JS for better highlighting -->
-    </p>
+    <p id="text"></p>
   </div>
 
   <script>
@@ -98,7 +101,7 @@
 
 • Weatherpro Fine Textured offers a matt finish that is available in 30 colours (Colour swatch references are as accurate as modern printing will allow.)
 • Weatherpro is available in 5 Liters, 10 Liters and 20 Liters (lift with care for pack sizes 10 Liters and over)
-• Weatherpro comes with a Guarantee 15 years (register your guarantee on www dot colourco dot co dot za within 30days of purchase)
+• Weatherpro comes with a Guarantee 15 years (register your guarantee on www.colourco.co.za within 30 days of purchase)
 • This coating is ideal for surfaces like cement plaster, concrete, fibre cement, and similar materials, provided surface preparation is done correctly.
 • Application can be done using a brush or roller and takes 60 minutes to dry (Spray only suitable for Weatherpro UltraSmooth)
 • The coverage is 7–9 meters squared per litre per coat, and 2 coats are recommended which must be done 4 hours apart
@@ -126,8 +129,10 @@ Colour swatch references are as accurate as modern printing will allow. For best
     const textContainer = document.getElementById('text');
 
     function splitIntoSentences(text) {
-      const parts = text.split(/(\n|•|\bWARNING:|\bENVIRONMENTAL & SAFETY WARNING|\bColour Disclaimer:|(?<=[.?!])\s+)/g);
-      return parts.filter(p => p.trim()).map(sentence => sentence.trim());
+      return text
+        .split(/(\n|•|\bWARNING:|\bENVIRONMENTAL & SAFETY WARNING|\bColour Disclaimer:|(?<=[.?!])\s+)/g)
+        .filter(p => p.trim())
+        .map(sentence => sentence.trim());
     }
 
     function populateSentences() {
@@ -135,7 +140,12 @@ Colour swatch references are as accurate as modern printing will allow. For best
       textContainer.innerHTML = '';
       sentenceElements = sentences.map(sentence => {
         const span = document.createElement('span');
-        span.textContent = sentence + ' ';
+        if (sentence.includes('www.colourco.co.za')) {
+          const link = `<a href="https://www.colourco.co.za" target="_blank">www.colourco.co.za</a>`;
+          span.innerHTML = sentence.replace('www.colourco.co.za', link) + ' ';
+        } else {
+          span.textContent = sentence + ' ';
+        }
         textContainer.appendChild(span);
         return span;
       });
@@ -150,17 +160,24 @@ Colour swatch references are as accurate as modern printing will allow. For best
     function readNextSentence() {
       if (currentSentenceIndex >= sentenceElements.length) return;
 
-      const sentence = sentenceElements[currentSentenceIndex];
-      highlight(sentence);
+      const span = sentenceElements[currentSentenceIndex];
+      let sentenceText = span.textContent;
 
-      utterance = new SpeechSynthesisUtterance(sentence.textContent);
+      // Improve clarity when reading the website aloud
+      if (sentenceText.includes("www.colourco.co.za")) {
+        sentenceText = sentenceText.replace("www.colourco.co.za", "W W W dot Colour Co dot C O dot Z A");
+      }
+
+      highlight(span);
+
+      utterance = new SpeechSynthesisUtterance(sentenceText);
       utterance.rate = 0.9;
 
       const voice = voices.find(v => v.lang.startsWith("en") && v.name.toLowerCase().includes("female")) || voices.find(v => v.lang.startsWith("en"));
       if (voice) utterance.voice = voice;
 
       utterance.onend = () => {
-        unhighlight(sentence);
+        unhighlight(span);
         if (!isPaused) {
           currentSentenceIndex++;
           readNextSentence();
@@ -192,9 +209,8 @@ Colour swatch references are as accurate as modern printing will allow. For best
       sentenceElements.forEach(span => span.classList.remove('highlight'));
     }
 
-    // Initialize sentences when page loads
+    // Load content
     populateSentences();
   </script>
 </body>
 </html>
-
