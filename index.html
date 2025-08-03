@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ColourCo WeatherPro Voice Reader</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ColourCo WeatherPro</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -21,19 +21,8 @@
       100% { background-position: 0% 50%; }
     }
 
-    #content {
-      background: rgba(0, 0, 0, 0.6);
-      padding: 1rem;
-      border-radius: 8px;
-      font-size: 1.1rem;
+    #controls {
       margin-bottom: 1rem;
-      line-height: 1.6;
-    }
-
-    .highlight {
-      background-color: yellow;
-      color: black;
-      font-weight: bold;
     }
 
     button {
@@ -55,54 +44,41 @@
     button.read { background-color: #00bfa5; }
     button.pause { background-color: #fbc02d; color: #000; }
     button.stop { background-color: #d32f2f; }
+
+    #content {
+      background: rgba(0, 0, 0, 0.6);
+      padding: 1rem;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      line-height: 1.6;
+    }
+
+    .highlight {
+      background-color: yellow;
+      color: black;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
   <h1>🎧 ColourCo WeatherPro Voice Reader</h1>
 
-  <div id="content">
-    <p id="text">
-      ColourCo WeatherPro is a tough, durable exterior coating with Ultraflex™ that provides lasting elasticity against hairline cracks and ensures Ultimate weather resistance.
-      <br><br>
-      • Weatherpro Fine Textured offers a matt finish that is available in 30 colours (Colour swatch references are as accurate as modern printing will allow.)<br>
-      • Weatherpro is available in 5 Liters, 10 Liters and 20 Liters (lift with care for pack sizes 10 Liters and over)<br>
-      • Weatherpro comes with a Guarantee 15 years (register your guarantee on www dot colourco dot co dot za within 30days of purchase)<br>
-      • This coating is ideal for surfaces like cement plaster, concrete, fibre cement, and similar materials, provided surface preparation is done correctly.<br>
-      • Application can be done using a brush or roller and takes 60 minutes to dry (Spray only suitable for Weatherpro UltraSmooth)<br>
-      • The coverage is 7–9 meters squared per litre per coat, and 2 coats are recommended which must be done 4 hours apart<br>
-      • To apply this product, begin by stirring thoroughly with a flat paddle until the mixture is completely uniform. Make sure the surface temperature is between 10 and 35 degrees Celsius, and the relative humidity ranges from 10 to 85 percent or at least 2 degrees above dew point.<br>
-      • The coating is ready to use with a brush or roller. Spray application isn’t recommended because it contains fine marble aggregate.<br>
-      • When using a roller, be careful not to overspread. Apply two coats with a minimum of four hours between them. Follow the recommended spreading rate closely—too thick or too thin can cause visible inconsistencies. Use V-shaped strokes, combining horizontal, diagonal, and vertical movements. Maintain a wet edge during application, and for best results, use a lamb’s wool roller.<br>
-      • If brushing, apply using upward strokes, laying on and finishing carefully to avoid uneven textures.<br>
-      • Do not thin the product—thinning will reduce opacity and its ability to bridge cracks.<br>
-      • Touch dry can be done in about 60 minutes and second coats can be applied after four hours at 23 degrees Celsius. Drying may take longer in colder or wetter conditions.<br>
-      • After use, clean off as much of the product as possible, then wash the equipment with clean water.<br>
-      • Ensure good ventilation during application and drying.<br>
-      • For detailed safety information click on Material Safety Data Sheet or Technical data sheet.<br>
-      • Keep out of reach of children.<br>
-      • This product is APEO free, and has the following GHS icons.
-      <br><br>
-      <strong>WARNING:</strong><br>
-      May cause an allergic skin reaction. Harmful to aquatic life with long-lasting effects. ColourCo paints contain no added lead. Avoid contact with skin and eyes. Keep out of reach of children. If accidentally swallowed, seek medical advice and show this container to the doctor. Dry sanding, flame cutting, and/or welding of the dry paint film may generate dust and/or hazardous fumes. Wet sanding should be used wherever possible. If exposure cannot be avoided through local exhaust ventilation, suitable respiratory protective equipment should be used. Do not empty into drains or watercourses. Ensure good ventilation during application and drying. Safety and technical datasheets available on request. Call a POISON CENTRE or doctor/physician if you feel unwell.
-      <br><br>
-      <strong>ENVIRONMENTAL & SAFETY WARNING</strong><br>
-      This product is harmful to aquatic life with long-lasting effects. Care should be taken to avoid accidental release into drains, watercourses, soil, or the wider environment. Even small amounts of paint can cause significant harm to aquatic organisms and disrupt ecosystems. Do not dispose of any leftover paint, cleaning water, or contaminated tools in household drains or outdoor water sources. Always use appropriate disposal methods in accordance with local, regional, and national environmental regulations. Contact your local waste disposal authority for more information on hazardous waste collection and paint recycling programs. During application and drying, ensure adequate ventilation to minimize the build-up of vapours or fumes. Take necessary precautions to avoid spills or splashes. In the event of accidental spillage, contain and collect the material immediately using appropriate absorbent materials, and prevent it from entering waterways. Read the full Colour Co Safety Data Sheet (SDS) before use. If the product is accidentally released into the environment, contact emergency services or environmental authorities immediately. By following safe usage and disposal practices, you help reduce environmental harm and contribute to the responsible use of Colour Co products.
-      <br><br>
-      <strong>Colour Disclaimer:</strong><br>
-      Colour swatch references are as accurate as modern printing will allow. For best colour and sheen consistency, it is advisable to use containers from the same batch number. In the case of different batch containers, it is recommended that they be mixed together in a large container or finish in a corner before starting a new container. Scan QR code to learn more about recycling of the pail.
-    </p>
-  </div>
-
-  <div>
+  <div id="controls">
     <button class="read" onclick="startReading()" id="readBtn" disabled>🔊 Read Aloud</button>
     <button class="pause" onclick="pauseReading()">⏸ Pause</button>
     <button class="stop" onclick="stopReading()">🛑 Stop</button>
   </div>
 
+  <div id="content">
+    <p id="text">
+      <!-- We'll break sentences into span tags via JS for better highlighting -->
+    </p>
+  </div>
+
   <script>
     let voices = [];
     let utterance;
-    let sentences = [];
+    let sentenceElements = [];
     let currentSentenceIndex = 0;
     let isPaused = false;
 
@@ -118,27 +94,73 @@
     speechSynthesis.onvoiceschanged = loadVoices;
     loadVoices();
 
+    const rawText = `ColourCo WeatherPro is a tough, durable exterior coating with Ultraflex™ that provides lasting elasticity against hairline cracks and ensures Ultimate weather resistance.
+
+• Weatherpro Fine Textured offers a matt finish that is available in 30 colours (Colour swatch references are as accurate as modern printing will allow.)
+• Weatherpro is available in 5 Liters, 10 Liters and 20 Liters (lift with care for pack sizes 10 Liters and over)
+• Weatherpro comes with a Guarantee 15 years (register your guarantee on www dot colourco dot co dot za within 30days of purchase)
+• This coating is ideal for surfaces like cement plaster, concrete, fibre cement, and similar materials, provided surface preparation is done correctly.
+• Application can be done using a brush or roller and takes 60 minutes to dry (Spray only suitable for Weatherpro UltraSmooth)
+• The coverage is 7–9 meters squared per litre per coat, and 2 coats are recommended which must be done 4 hours apart
+• To apply this product, begin by stirring thoroughly with a flat paddle until the mixture is completely uniform. Make sure the surface temperature is between 10 and 35 degrees Celsius, and the relative humidity ranges from 10 to 85 percent or at least 2 degrees above dew point.
+• The coating is ready to use with a brush or roller. Spray application isn’t recommended because it contains fine marble aggregate.
+• When using a roller, be careful not to overspread. Apply two coats with a minimum of four hours between them. Follow the recommended spreading rate closely—too thick or too thin can cause visible inconsistencies. Use V-shaped strokes, combining horizontal, diagonal, and vertical movements. Maintain a wet edge during application, and for best results, use a lamb’s wool roller.
+• If brushing, apply using upward strokes, laying on and finishing carefully to avoid uneven textures.
+• Do not thin the product—thinning will reduce opacity and its ability to bridge cracks.
+• Touch dry can be done in about 60 minutes and second coats can be applied after four hours at 23 degrees Celsius. Drying may take longer in colder or wetter conditions.
+• After use, clean off as much of the product as possible, then wash the equipment with clean water.
+• Ensure good ventilation during application and drying.
+• For detailed safety information click on Material Safety Data Sheet or Technical data sheet.
+• Keep out of reach of children.
+• This product is APEO free, and has the following GHS icons.
+
+WARNING:
+May cause an allergic skin reaction. Harmful to aquatic life with long-lasting effects. ColourCo paints contain no added lead. Avoid contact with skin and eyes. Keep out of reach of children. If accidentally swallowed, seek medical advice and show this container to the doctor. Dry sanding, flame cutting, and/or welding of the dry paint film may generate dust and/or hazardous fumes. Wet sanding should be used wherever possible. If exposure cannot be avoided through local exhaust ventilation, suitable respiratory protective equipment should be used. Do not empty into drains or watercourses. Ensure good ventilation during application and drying. Safety and technical datasheets available on request. Call a POISON CENTRE or doctor/physician if you feel unwell.
+
+ENVIRONMENTAL & SAFETY WARNING
+This product is harmful to aquatic life with long-lasting effects. Care should be taken to avoid accidental release into drains, watercourses, soil, or the wider environment. Even small amounts of paint can cause significant harm to aquatic organisms and disrupt ecosystems. Do not dispose of any leftover paint, cleaning water, or contaminated tools in household drains or outdoor water sources. Always use appropriate disposal methods in accordance with local, regional, and national environmental regulations. Contact your local waste disposal authority for more information on hazardous waste collection and paint recycling programs. During application and drying, ensure adequate ventilation to minimize the build-up of vapours or fumes. Take necessary precautions to avoid spills or splashes. In the event of accidental spillage, contain and collect the material immediately using appropriate absorbent materials, and prevent it from entering waterways. Read the full Colour Co Safety Data Sheet (SDS) before use. If the product is accidentally released into the environment, contact emergency services or environmental authorities immediately. By following safe usage and disposal practices, you help reduce environmental harm and contribute to the responsible use of Colour Co products.
+
+Colour Disclaimer:
+Colour swatch references are as accurate as modern printing will allow. For best colour and sheen consistency, it is advisable to use containers from the same batch number. In the case of different batch containers, it is recommended that they be mixed together in a large container or finish in a corner before starting a new container. Scan QR code to learn more about recycling of the pail.`;
+
+    const textContainer = document.getElementById('text');
+
+    function splitIntoSentences(text) {
+      const parts = text.split(/(\n|•|\bWARNING:|\bENVIRONMENTAL & SAFETY WARNING|\bColour Disclaimer:|(?<=[.?!])\s+)/g);
+      return parts.filter(p => p.trim()).map(sentence => sentence.trim());
+    }
+
+    function populateSentences() {
+      const sentences = splitIntoSentences(rawText);
+      textContainer.innerHTML = '';
+      sentenceElements = sentences.map(sentence => {
+        const span = document.createElement('span');
+        span.textContent = sentence + ' ';
+        textContainer.appendChild(span);
+        return span;
+      });
+    }
+
     function startReading() {
       stopReading();
-      const fullText = document.getElementById('text').innerText;
-      sentences = fullText.match(/[^.!?]+[.!?]+/g) || [fullText];
       currentSentenceIndex = 0;
       readNextSentence();
     }
 
     function readNextSentence() {
-      if (currentSentenceIndex >= sentences.length) return;
+      if (currentSentenceIndex >= sentenceElements.length) return;
 
-      const sentence = sentences[currentSentenceIndex].trim();
-      highlightSentence(sentence);
+      const sentence = sentenceElements[currentSentenceIndex];
+      highlight(sentence);
 
-      utterance = new SpeechSynthesisUtterance(sentence);
+      utterance = new SpeechSynthesisUtterance(sentence.textContent);
       utterance.rate = 0.9;
 
       const voice = voices.find(v => v.lang.startsWith("en") && v.name.toLowerCase().includes("female")) || voices.find(v => v.lang.startsWith("en"));
       if (voice) utterance.voice = voice;
 
       utterance.onend = () => {
+        unhighlight(sentence);
         if (!isPaused) {
           currentSentenceIndex++;
           readNextSentence();
@@ -148,13 +170,12 @@
       speechSynthesis.speak(utterance);
     }
 
-    function highlightSentence(sentence) {
-      const container = document.getElementById('text');
-      const original = container.innerText;
-      const safeSentence = sentence.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      const regex = new RegExp(safeSentence, 'i');
-      const highlighted = original.replace(regex, match => `<span class="highlight">${match}</span>`);
-      container.innerHTML = highlighted;
+    function highlight(span) {
+      span.classList.add('highlight');
+    }
+
+    function unhighlight(span) {
+      span.classList.remove('highlight');
     }
 
     function pauseReading() {
@@ -168,8 +189,11 @@
       speechSynthesis.cancel();
       isPaused = false;
       currentSentenceIndex = 0;
-      document.getElementById('text').innerText = document.getElementById('text').innerText; // reset text
+      sentenceElements.forEach(span => span.classList.remove('highlight'));
     }
+
+    // Initialize sentences when page loads
+    populateSentences();
   </script>
 </body>
 </html>
